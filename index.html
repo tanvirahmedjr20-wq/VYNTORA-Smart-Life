@@ -2,44 +2,101 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VYNTORA Online Shopping</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6fa;
-      color: #172033;
-    }
-    header {
-      background: #101828;
-      color: white;
-      padding: 25px 16px;
-      text-align: center;
-    }
-    h1 { margin: 0; letter-spacing: 3px; }
-    main { padding: 20px; text-align: center; }
-    button {
-      background: #f6b817;
-      border: 0;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101828">
+<title>VYNTORA | Online Shopping</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f6fa;color:#172033;font-family:Arial,sans-serif}
+header{background:#101828;color:white;padding:18px 15px}
+.brand{font-size:28px;font-weight:900;letter-spacing:3px}
+header p{color:#cbd5e1;font-size:13px}
+.search{display:flex;gap:8px}
+input{min-width:0;padding:12px;border:0;border-radius:8px;flex:1}
+button{border:0;border-radius:8px;padding:11px;cursor:pointer}
+.search button,.hero button{background:#f6b817;font-weight:bold}
+nav{display:flex;gap:8px;overflow-x:auto;padding:12px;background:white}
+nav button{white-space:nowrap;background:#e9edf5}
+.hero{margin:15px;padding:23px;border-radius:14px;background:linear-gradient(130deg,#182848,#4b6cb7);color:white}
+.hero h2{font-size:25px;margin-top:0}
+main{padding:0 15px 25px}
+h3.section{margin-top:25px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:white;border-radius:12px;padding:12px;box-shadow:0 2px 9px #0000000b}
+.pic{height:100px;background:#edf1f7;border-radius:8px;display:grid;place-items:center;font-size:43px}
+.card h3{font-size:15px}
+.price{color:#087443;font-weight:bold;font-size:18px}
+.card button{background:#101828;color:white;width:100%;margin-top:8px}
+#cart{position:sticky;bottom:0;background:white;padding:14px;display:flex;justify-content:space-between;border-top:1px solid #ddd}
+footer{text-align:center;padding:22px;color:#667085}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}main{max-width:1050px;margin:auto}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>VYNTORA</h1>
-    <p>Your Style. Your Choice.</p>
-  </header>
-  <main>
-    <h2>Welcome to VYNTORA</h2>
-    <p>আপনার পছন্দের পণ্য কিনুন সহজেই।</p>
-    <button onclick="alert('Welcome to VYNTORA!')">
-      Shop Now
-    </button>
-  </main>
+<header>
+  <div class="brand">VYNTORA</div>
+  <p>Your Style. Your Choice.</p>
+  <div class="search">
+    <input id="search" placeholder="পণ্য খুঁজুন / Search">
+    <button onclick="render()">খুঁজুন</button>
+  </div>
+</header>
+
+<nav>
+  <button onclick="filter('সব')">সব পণ্য</button>
+  <button onclick="filter('গ্যাজেট')">গ্যাজেট</button>
+  <button onclick="filter('ঘড়ি')">ঘড়ি</button>
+  <button onclick="filter('ফ্যাশন')">ফ্যাশন</button>
+</nav>
+
+<section class="hero">
+  <h2>Welcome to VYNTORA</h2>
+  <p>পছন্দের পণ্য কিনুন সহজেই। Quality products, great prices!</p>
+  <button onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Shop Now →</button>
+</section>
+
+<main>
+  <h3 class="section">জনপ্রিয় পণ্য / Products</h3>
+  <div class="grid" id="products"></div>
+</main>
+
+<div id="cart">
+  <span>🛒 Cart: <b id="count">0</b></span>
+  <b id="total">৳0</b>
+</div>
+
+<footer>© 2026 VYNTORA. All rights reserved.</footer>
+
+<script>
+const items=[
+ {name:"Smart Watch",price:1250,cat:"ঘড়ি",emoji:"⌚"},
+ {name:"Wireless Earbuds",price:950,cat:"গ্যাজেট",emoji:"🎧"},
+ {name:"Power Bank",price:1849,cat:"গ্যাজেট",emoji:"🔋"},
+ {name:"Fashion Watch",price:790,cat:"ঘড়ি",emoji:"⌚"},
+ {name:"Sunglasses",price:450,cat:"ফ্যাশন",emoji:"🕶️"},
+ {name:"Fashion Accessories",price:550,cat:"ফ্যাশন",emoji:"✨"}
+];
+let selected="সব",cart=[];
+function filter(c){selected=c;render()}
+function render(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const found=items.filter(p=>(selected==="সব"||p.cat===selected)&&p.name.toLowerCase().includes(q));
+ document.getElementById("products").innerHTML=found.length?found.map((p,i)=>`
+ <article class="card">
+ <div class="pic">${p.emoji}</div>
+ <h3>${p.name}</h3>
+ <div class="price">৳${p.price.toLocaleString("en-BD")}</div>
+ <button onclick="add(${items.indexOf(p)})">Add to Cart</button>
+ </article>`).join(""):"কোনো পণ্য পাওয়া যায়নি।";
+}
+function add(i){
+ cart.push(items[i]);
+ document.getElementById("count").textContent=cart.length;
+ document.getElementById("total").textContent="৳"+cart.reduce((s,p)=>s+p.price,0).toLocaleString("en-BD");
+}
+document.getElementById("search").addEventListener("input",render);
+render();
+</script>
 </body>
 </html>
